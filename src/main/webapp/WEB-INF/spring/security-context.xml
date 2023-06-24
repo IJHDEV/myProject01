@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-5.4.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- 사용자 password 암호화 처리 빈: BCrypt 방식 암호화 -->
+	<bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+	
+	
+	<!-- 승인/인증을 위해 필요한 데이터를 가져오는 빈(UserDetailsService 타입의 빈) -->
+	<bean id="myMemberUserDetailsServiceImpl" class="com.spring5.mypro01.common.security.MyMemberUserDetailsServiceImpl"/>
+	
+	
+	<!-- 로그인 성공시의 처리 로직이 정의된 클래스의 빈 등록 -->
+	<bean id="myLoginSuccessHandler" class="com.spring5.mypro01.common.security.MyLoginSuccessHandler2"/>
+	
+	<bean id="myAccessDeniedHandler" class="com.spring5.mypro01.common.security.MyAccessDeniedHandler"/>
+
+
+	<security:http>
+		<security:intercept-url pattern="/myboard/list" access="permitAll"/>
+		<security:intercept-url pattern="/myboard/detail" access="permitAll"/>
+	
+	
+	<!-- 
+		<security:intercept-url pattern="/" access="permitAll"/>
+		<security:intercept-url pattern="/myboard/list" access="hasAuthority('ROLE_MEMBER')"/>
+		<security:intercept-url pattern="/myboard/register" access="isAuthenticated()"/>
+		<security:intercept-url pattern="/myboard/modify" access="hasRole('ROLE_ADMIN')"/> -->
+		<security:form-login login-page="/login"
+							 login-processing-url="/login"
+							 default-target-url="/"
+							 authentication-success-handler-ref="myLoginSuccessHandler"
+							 />
+		<security:logout logout-url="/myLogoutProcess" logout-success-url="/"/>	
+
+	<!-- 스프링 시큐리티 자동 로그인: 1주일 유지 -->
+	<!-- Referenced Bean 'dataSource' not found 경고는 무시 -->
+	<security:remember-me data-source-ref="dataSource"
+						  remember-me-parameter="myRememberMe"
+						  token-validity-seconds="604800"/>
+	
+	<security:access-denied-handler ref="myAccessDeniedHandler"/>
+
+	</security:http>
+	
+	<security:authentication-manager>
+		<security:authentication-provider user-service-ref="myMemberUserDetailsServiceImpl">
+			<security:password-encoder ref="bCryptPasswordEncoder"/>
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+</beans>
