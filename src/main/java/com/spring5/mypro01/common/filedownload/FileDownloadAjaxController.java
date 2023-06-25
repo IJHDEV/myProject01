@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class FileDownloadAjaxController {
 	
-	//main push
+	//2007
 	@GetMapping(value = "fileDownloadAjax",
 				produces = "application/octet-stream")
 	@ResponseBody
