@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class FileDownloadAjaxController {
 	
-	//2023
+	//20252525
 	@GetMapping(value = "fileDownloadAjax",
 				produces = "application/octet-stream")
 	@ResponseBody
